@@ -1,9 +1,8 @@
-
 CREATE TABLE Customer
 (
     CustomerID INT NOT NULL IDENTITY(1,1),
-    Name VARCHAR(50) NOT NULL,
-    Address VARCHAR(50) NOT NULL,
+    FullName VARCHAR(50) NOT NULL,
+    FullAddress VARCHAR(50) NOT NULL,
     Email VARCHAR(50) NOT NULL,
     PhoneNumber INT NOT NULL,
     UserName VARCHAR(20) NOT NULL,
@@ -18,7 +17,7 @@ CREATE TABLE Customer
 CREATE TABLE CreditCard
 (
     CreditCardNumber VARCHAR(20) NOT NULL,
-    ExpiryDate DATE NOT NULL,
+    Expiry DATE NOT NULL,
     CustomerID INT NOT NULL,
 
     PRIMARY KEY (CreditCardNumber),
@@ -91,7 +90,7 @@ CREATE TABLE Invoice
 (
     InvoiceNumber INT NOT NULL IDENTITY(1,1),
     InvoiceDate DATE NOT NULL DEFAULT GETDATE(),
-    InvoiceStatus VARCHAR(20) NOT NULL,
+    InvoiceStatus VARCHAR(20) NOT NULL CHECK (InvoiceStatus IN('ISSUED', 'PAID')),
 
     PRIMARY KEY (InvoiceNumber)
 );
@@ -99,7 +98,7 @@ CREATE TABLE Invoice
 CREATE TABLE Payment
 (
     PaymentID INT NOT NULL IDENTITY(1,1),
-    PaymentDate DATE NOT NULL DEFAULT GETDATE(),
+    PayDate DATE NOT NULL DEFAULT GETDATE(),
     Amount DECIMAL(8,2) NOT NULL,
     InvoiceNumber INT NOT NULL,
     CreditCardNumber VARCHAR(20) NOT NULL,
@@ -115,7 +114,7 @@ CREATE TABLE Orders
 (
     OrderID INT NOT NULL IDENTITY(1,1),
     OrderDate DATE NOT NULL DEFAULT GETDATE(),
-    OrderStatus VARCHAR(20) NOT NULL,
+    OrderStatus VARCHAR(20) NOT NULL CHECK (OrderStatus IN('COMPLETED', 'PROCESSING', 'CANCELLED')),
     CustomerID INT NOT NULL,
     InvoiceNumber INT NOT NULL,
 
@@ -137,13 +136,13 @@ CREATE TABLE Shipment
 
 CREATE TABLE OrderItem
 (
-    OrderID INT NOT NULL,
     SequenceID INT NOT NULL IDENTITY(1,1),
-    ProductID INT NOT NULL,
-    ShipmentID INT,
-    Quantity INT NOT NULL,
+    OrderID INT NOT NULL,
     UnitPrice DECIMAL(8,2) NOT NULL,
-    ItemStatus VARCHAR(20) NOT NULL,
+    Quantity INT NOT NULL,
+    OrderItemStatus VARCHAR(20) NOT NULL CHECK (OrderItemStatus IN('SHIPPED', 'PROCESSING', 'OUT_OF_STOCK')),
+    ShipmentID INT,
+    ProductID INT NOT NULL,
 
     PRIMARY KEY (SequenceID),
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
